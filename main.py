@@ -30,4 +30,3 @@ def start_mining():
 @app.post("/mining/stop")
 def stop_mining():
     return {"message": "Mining stopped", "status": "inactive"}
-Add main.py
