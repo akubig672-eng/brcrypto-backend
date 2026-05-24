@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BENROSE Mining</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0a0e27;color:#fff;min-height:100vh}
+        .container{max-width:600px;margin:0 auto;padding:20px}
+        header{text-align:center;padding:30px 0}
+        .logo{font-size:32px;font-weight:bold;color:#64ffda;margin-bottom:10px;letter-spacing:2px}
+        h1{font-size:28px;margin-bottom:8px}
+        p{color:#8892b0}
+        .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin:20px 0}
+        .card{background:#112240;border-radius:12px;padding:20px;text-align:center}
+        .card h3{color:#8892b0;font-size:14px;margin-bottom:10px;text-transform:uppercase}
+        .value{font-size:24px;font-weight:bold;color:#64ffda}
+        .actions{display:flex;gap:15px;margin:30px 0}
+        .btn{flex:1;padding:15px;border:none;border-radius:8px;font-size:16px;font-weight:bold;cursor:pointer}
+        .btn-start{background:#64ffda;color:#0a0e27}
+        .btn-stop{background:#ff6b6b;color:#fff}
+        .about{background:#112240;border-radius:12px;padding:25px;margin:30px 0;text-align:center}
+        .about h2{color:#64ffda;margin-bottom:15px}
+        .about p{color:#8892b0;line-height:1.6;margin-bottom:15px}
+        .about a{color:#64ffda;text-decoration:none}
+        footer{text-align:center;padding:30px 0;color:#8892b0;font-size:14px}
+        @media(max-width:400px){.stats-grid{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">⚡ BENROSE</div>
+            <h1>BenRose Mining</h1>
+            <p>Building a Legacy</p>
+        </header>
+        <div class="stats-grid">
+            <div class="card"><h3>Status</h3><div id="status" class="value">Loading...</div></div>
+            <div class="card"><h3>Hashrate</h3><div id="hashrate" class="value">Loading...</div></div>
+            <div class="card"><h3>Workers</h3><div id="workers" class="value">Loading...</div></div>
+            <div class="card"><h3>Earnings</h3><div id="earnings" class="value">Loading...</div></div>
+        </div>
+        <div class="actions">
+            <button id="startBtn" class="btn btn-start">Start Mining</button>
+            <button id="stopBtn" class="btn btn-stop">Stop Mining</button>
+        </div>
+        <div id="message" class="message" style="display:none;text-align:center;padding:15px;border-radius:8px;margin-top:20px"></div>
+        <div class="about">
+            <h2>About BenRose Mining</h2>
+            <p>BenRose Mining is a next-generation crypto mining platform. Named in honor of our founders' parents, we believe in building lasting value through innovation and integrity.</p>
+            <p>Contact: <a href="mailto:solidrock292@gmail.com">solidrock292@gmail.com</a></p>
+        </div>
+        <footer>
+            <p>© 2026 BenRose Mining. All rights reserved.</p>
+            <p>solidrock292@gmail.com</p>
+        </footer>
+    </div>
+    <script>
+        const API_URL='https://brcrypto-backend-1.onrender.com';
+        const statusEl=document.getElementById('status');
+        const hashrateEl=document.getElementById('hashrate');
+        const workersEl=document.getElementById('workers');
+        const earningsEl=document.getElementById('earnings');
+        const startBtn=document.getElementById('startBtn');
+        const stopBtn=document.getElementById('stopBtn');
+        const messageEl=document.getElementById('message');
+        async function fetchStats(){try{const r=await fetch(`${API_URL}/mining/status`);const d=await r.json();statusEl.textContent=d.active?'Active':'Inactive';statusEl.style.color=d.active?'#64ffda':'#ff6b6b';hashrateEl.textContent=d.hashrate;workersEl.textContent=d.workers;earningsEl.textContent=`$${d.earnings.toFixed(2)}`}catch(e){showMessage('Failed to load stats','error')}}
+        async function startMining(){try{startBtn.disabled=true;const r=await fetch(`${API_URL}/mining/start`,{method:'POST'});const d=await r.json();showMessage(d.message,'success');fetchStats()}catch(e){showMessage('Failed to start','error')}finally{startBtn.disabled=false}}
+        async function stopMining(){try{stopBtn.disabled=true;const r=await fetch(`${API_URL}/mining/stop`,{method:'POST'});const d=await r.json();showMessage(d.message,'success');fetchStats()}catch(e){showMessage('Failed to stop','error')}finally{stopBtn.disabled=false}}
+        function showMessage(text,type){messageEl.textContent=text;messageEl.style.display='block';messageEl.style.background=type==='success'?'rgba(100,255,218,0.1)':'rgba(255,107,107,0.1)';messageEl.style.color=type==='success'?'#64ffda':'#ff6b6b';setTimeout(()=>{messageEl.style.display='none'},3000)}
+        startBtn.addEventListener('click',startMining);
+        stopBtn.addEventListener('click',stopMining);
+        fetchStats();
+        setInterval(fetchStats,30000);
+    </script>
+</body>
+</html>
